@@ -36,7 +36,7 @@ func (ath *accessTokenHanlder) GetById(c *gin.Context) {
 
 func (ath *accessTokenHanlder) Create(c *gin.Context) {
 	var at access_token.AccessToken
-	// TODO: if send an empty body it will not throw error
+
 	if err := c.ShouldBindJSON(&at); err != nil {
 		restErr := errors.NewBadRequestError("invalid json body")
 		c.JSON(restErr.Status, restErr)

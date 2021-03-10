@@ -11,10 +11,10 @@ const expirationTime = 24
 
 // AccessToken object
 type AccessToken struct {
-	AccessToken string `json:"access_token"`
-	UserID      int64  `json:"user_id"`
-	ClientID    int64  `json:"client_id"`
-	Expires     int64  `json:"expires"`
+	AccessToken string `json:"access_token" binding:"required"`
+	UserID      int64  `json:"user_id" binding:"required"`
+	ClientID    int64  `json:"client_id" binding:"required"`
+	Expires     int64  `json:"expires" binding:"required"`
 }
 
 // Validate validates an access token
