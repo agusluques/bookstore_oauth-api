@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/agusluques/bookstore_oauth-api/src/domain/access_token"
+	"github.com/agusluques/bookstore_oauth-api/src/services"
 	"github.com/agusluques/bookstore_oauth-api/src/utils/errors"
 	"github.com/gin-gonic/gin"
 )
@@ -11,20 +12,19 @@ import (
 type AccessTokenHandler interface {
 	GetById(*gin.Context)
 	Create(*gin.Context)
-	//Update(*gin.Context)
 }
 
-type accessTokenHanlder struct {
-	service access_token.Service
+type accessTokenHandler struct {
+	service services.Service
 }
 
-func NewHandler(s access_token.Service) AccessTokenHandler {
-	return &accessTokenHanlder{
+func NewHandler(s services.Service) AccessTokenHandler {
+	return &accessTokenHandler{
 		service: s,
 	}
 }
 
-func (ath *accessTokenHanlder) GetById(c *gin.Context) {
+func (ath *accessTokenHandler) GetById(c *gin.Context) {
 	accessToken, err := ath.service.GetById(c.Param("access_token_id"))
 	if err != nil {
 		c.JSON(err.Status, err)
@@ -34,19 +34,19 @@ func (ath *accessTokenHanlder) GetById(c *gin.Context) {
 	c.JSON(http.StatusOK, accessToken)
 }
 
-func (ath *accessTokenHanlder) Create(c *gin.Context) {
-	var at access_token.AccessToken
+func (ath *accessTokenHandler) Create(c *gin.Context) {
+	var request access_token.AccessTokenRequest
 
-	if err := c.ShouldBindJSON(&at); err != nil {
+	if err := c.ShouldBindJSON(&request); err != nil {
 		restErr := errors.NewBadRequestError("invalid json body")
 		c.JSON(restErr.Status, restErr)
 		return
 	}
 
-	if err := ath.service.Create(at); err != nil {
+	accessToken, err := ath.service.Create(request)
+	if err != nil {
 		c.JSON(err.Status, err)
 		return
 	}
-
-	c.JSON(http.StatusCreated, at)
+	c.JSON(http.StatusCreated, accessToken)
 }

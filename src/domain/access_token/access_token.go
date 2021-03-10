@@ -1,13 +1,41 @@
 package access_token
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
+	"github.com/agusluques/bookstore_oauth-api/src/utils/crypto_utils"
 	"github.com/agusluques/bookstore_oauth-api/src/utils/errors"
 )
 
-const expirationTime = 24
+const (
+	expirationTime             = 24
+	grantTypePassword          = "password"
+	grantTypeClientCredentials = "client_credentials"
+)
+
+// AccessTokenRequest object
+type AccessTokenRequest struct {
+	GrantType string `json:"grant_type" binding:"required"`
+	Scope     string `json:"scope"`
+
+	// password grant type
+	Username string `json:"username"`
+	Password string `json:"password"`
+
+	// client credentials grant type
+	ClientID     string `json:"client_id"`
+	ClientSecret string `json:"client_secret"`
+}
+
+// Validate validates an access token
+func (at *AccessTokenRequest) Validate() *errors.RestError {
+	if at.GrantType != grantTypePassword && at.GrantType != grantTypeClientCredentials {
+		return errors.NewBadRequestError("invalid grant type")
+	}
+	return nil
+}
 
 // AccessToken object
 type AccessToken struct {
@@ -37,12 +65,17 @@ func (at *AccessToken) Validate() *errors.RestError {
 }
 
 // GetNewAccessToken returns new access token
-func GetNewAccessToken() AccessToken {
+func GetNewAccessToken(userID int64) AccessToken {
 	return AccessToken{
+		UserID:  userID,
 		Expires: time.Now().UTC().Add(expirationTime * time.Hour).Unix(),
 	}
 }
 
 func (at AccessToken) isExpired() bool {
 	return time.Unix(at.Expires, 0).Before(time.Now().UTC())
+}
+
+func (at *AccessToken) Generate() {
+	at.AccessToken = crypto_utils.GetMd5(fmt.Sprintf("at-%d-%d-ran", at.UserID, at.Expires))
 }

@@ -12,7 +12,7 @@ func TestAccessTokenConstant(t *testing.T) {
 }
 
 func TestGetNewAccessToken(t *testing.T) {
-	at := GetNewAccessToken()
+	at := GetNewAccessToken(0)
 
 	assert.False(t, at.isExpired(), "new access token should not be expired")
 	assert.Equal(t, "", at.AccessToken, "new access token should not have access token id")
