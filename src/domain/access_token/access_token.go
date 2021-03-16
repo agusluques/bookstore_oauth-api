@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/agusluques/bookstore_oauth-api/src/utils/crypto_utils"
-	"github.com/agusluques/bookstore_oauth-api/src/utils/errors"
+	"github.com/agusluques/bookstore_utils-go/rest_errors"
 )
 
 const (
@@ -30,9 +30,9 @@ type AccessTokenRequest struct {
 }
 
 // Validate validates an access token
-func (at *AccessTokenRequest) Validate() *errors.RestError {
+func (at *AccessTokenRequest) Validate() *rest_errors.RestError {
 	if at.GrantType != grantTypePassword && at.GrantType != grantTypeClientCredentials {
-		return errors.NewBadRequestError("invalid grant type")
+		return rest_errors.NewBadRequestError("invalid grant type")
 	}
 	return nil
 }
@@ -46,20 +46,20 @@ type AccessToken struct {
 }
 
 // Validate validates an access token
-func (at *AccessToken) Validate() *errors.RestError {
+func (at *AccessToken) Validate() *rest_errors.RestError {
 	at.AccessToken = strings.TrimSpace(at.AccessToken)
 
 	if len(at.AccessToken) == 0 {
-		return errors.NewBadRequestError("invalid access token id")
+		return rest_errors.NewBadRequestError("invalid access token id")
 	}
 	if at.UserID <= 0 {
-		return errors.NewBadRequestError("invalid user id")
+		return rest_errors.NewBadRequestError("invalid user id")
 	}
 	if at.ClientID <= 0 {
-		return errors.NewBadRequestError("invalid client id")
+		return rest_errors.NewBadRequestError("invalid client id")
 	}
 	if at.Expires <= 0 {
-		return errors.NewBadRequestError("invalid expiration time")
+		return rest_errors.NewBadRequestError("invalid expiration time")
 	}
 	return nil
 }
