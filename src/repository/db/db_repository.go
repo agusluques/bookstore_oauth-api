@@ -31,7 +31,7 @@ func (dbr *dbRepository) GetById(id string) (*access_token.AccessToken, *errors.
 	if err := cassandra.GetSession().Query(queryGetAccessToken, id).Scan(
 		&result.AccessToken,
 		&result.UserID,
-		&result.UserID,
+		&result.ClientID,
 		&result.Expires,
 	); err != nil {
 		if err == gocql.ErrNotFound {
